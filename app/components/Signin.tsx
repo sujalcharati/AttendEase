@@ -1,3 +1,5 @@
+"use client"
+import { signIn } from 'next-auth/react'
 import React from 'react'
 import { FcGoogle } from 'react-icons/fc'
 
@@ -36,7 +38,7 @@ const Signin = () => {
                     <span className='px-4 text-black'>OR</span>
                     <hr className='w-full border-gray-300' />
                 </div>
-                <button className=' mt-20 text-black  h-16 border border-solid border-black rounded-md flex items-center justify-center  w-full text-2xl'>
+                <button  onClick={() => signIn()} className=' mt-20 text-black  h-16 border border-solid border-black rounded-md flex items-center justify-center  w-full text-2xl'>
                     <FcGoogle className='w-10 h-10 mr-2 bg-white' />
                     Continue with Google
                 </button>
