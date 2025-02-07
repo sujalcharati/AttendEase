@@ -1,18 +1,38 @@
 import mongoose from 'mongoose';
 
-export  const connectDB = async () => {
-    try {
-        const dbUrl = process.env.URL;
-        if (!dbUrl) {
-            throw new Error('MongoDB connection URL is not defined');
-        }
-        await mongoose.connect(dbUrl);
-        console.log('MongoDB connected successfully.');
-    } catch (error) {
-        console.error('MongoDB connection failed:', error);
-        process.exit(1); 
-    }
-};
+const dbUrl = process.env.URL!;
+if (!dbUrl) {
+    throw new Error('MongoDB connection URL is not defined');
+}
 
+let cached = global.mongoose;
+
+if(!cached){
+    cached=global.mongoose ={ conn:null, promise: null}
+}
+export  const connectDB = async () => {
+  if( cached.conn){
+    return cached.conn
+  }
+
+  if(!cached.promise){
+    const opts ={
+        bufferCommands: true,
+        maxPoolSize: 10
+    };
+
+    cached.promise = mongoose.connect(dbUrl, opts).then(() => mongoose.connection);
+  }
+
+
+  try{
+   cached.conn = await cached.promise
+  }
+  catch(error){
+       cached.promise = null;
+       throw error
+  }
+  return cached.conn;
+};
 
 
