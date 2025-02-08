@@ -1,3 +1,4 @@
+import User from '@/models/user';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 export const NEXT_AUTH_CONFIG = {
@@ -5,19 +6,36 @@ export const NEXT_AUTH_CONFIG = {
       CredentialsProvider({
           name: 'Credentials',
           credentials: {
-            username: { label: 'email', type: 'text', placeholder: '' },
+            username: { label: 'username', type: 'text', placeholder: '' },
             password: { label: 'password', type: 'password', placeholder: '' },
+            email :{ label:'email', type: 'email', placeholder: ''}
           },
-          async authorize(credentials: any) {
-  
+          async authorize(Credentials: any) {
+            
+
+
+            try{
+              const user = await User.create({
+                data :{
+                  username: Credentials.username,
+                  password : Credentials.password,
+                  email: Credentials.email
+                }
+              })
               return {
-                  id: "user1",
-                  name: "asd",
-                  userId: "asd",
-                  email: "ramdomEmail"
-              };
-          },
-        }),
+                id: user.id.toString(),
+                name: user.username,
+                email: user.email
+              }
+            }
+              catch(error){
+              console.error(error)
+
+              }
+              return null;
+            }
+          })
+       
     ],
     secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
