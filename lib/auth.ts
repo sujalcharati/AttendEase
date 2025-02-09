@@ -1,5 +1,6 @@
 import User from '@/models/user';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import { connectDB } from '@/lib/db';
 
 export const NEXT_AUTH_CONFIG = {
     providers: [
@@ -11,7 +12,8 @@ export const NEXT_AUTH_CONFIG = {
             email :{ label:'email', type: 'email', placeholder: ''}
           },
           async authorize(Credentials: any) {
-            
+            await connectDB();
+
 
 
             try{
