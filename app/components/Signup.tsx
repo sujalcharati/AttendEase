@@ -48,29 +48,32 @@ return (
                 <div>
                     <label className="block text-2xl font-medium text-gray-700">Username</label>
                     <input 
+                        name="username"
                         onChange={handlesubmit}
                         type="text" 
                         placeholder="Enter username" 
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-blue-900"
                     />
                 </div>
                 <div>
                     <label className="block text-2xl font-medium text-gray-700">Email</label>
-                    <input 
+                    <input
+                        name="email"
                         onChange={handlesubmit}
                         type="email" 
                         placeholder="Enter email" 
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        
                     />
                 </div>
                 <div>
-                    <label className="block text-2xl font-medium text-gray-700">Password</label>
-                    <input 
-                         onChange={handlesubmit}
-
+                <input
+                        name="password"
+                        onChange={handlesubmit}
                         type="password" 
                         placeholder="Password" 
                         className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                       
                     />
                 </div>
                 <button 

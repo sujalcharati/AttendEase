@@ -1,5 +1,5 @@
 import React from 'react'
-import Signup from '../components/Signup' // Adjust the import path as necessary
+import Signup from '../components/Signup' 
 
 const singup = () => {
   return (
