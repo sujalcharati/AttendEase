@@ -1,22 +1,29 @@
-import React from 'react'
-import Signin from '../components/Signin'
+"use client"
+import React, { useEffect } from 'react';
+import Signin from '../components/Signin';
 import { NEXT_AUTH_CONFIG } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
-import { redirect } from 'next/navigation';
+import { useRouter } from 'next/router';
 
-const signIn = async () => {
+const SignInPage = () => {
+  const router = useRouter();
 
-  const session =await getServerSession(NEXT_AUTH_CONFIG);
-  if(session?.user){
-    redirect('/homepage')
-  }
+  useEffect(() => {
+    const checkSession = async () => {
+      const session = await getServerSession(NEXT_AUTH_CONFIG);
+      if (session?.user) {
+        router.push('/homepage');
+      }
+    };
+
+    checkSession();
+  }, [router]);
+
   return (
     <div>
-
-      <Signin/>
-      
+      <Signin />
     </div>
-  )
-}
+  );
+};
 
-export default signIn 
+export default SignInPage;

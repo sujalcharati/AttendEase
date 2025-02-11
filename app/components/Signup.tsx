@@ -3,8 +3,7 @@ import React, { useState } from 'react'
 import axios from 'axios'
 
 const Signup = () => {
-
-    const [formdata, setFormdata] =useState({
+    const [formdata, setFormdata] = useState({
         username: "",
         email: "",
         password: "",
@@ -29,9 +28,13 @@ const submitform = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try{
         const result =await axios.post('http://localhost:3000/api/auth/signup',formdata);
-        console.log(result)
+        console.log(result);
+    
+        }
+    
+     
         
-    }
+    
     catch(e){
         console.error('error message',e);
     }
