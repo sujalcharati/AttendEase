@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const dbUrl = process.env.URL!;
+const dbUrl = process.env.URL;
 if (!dbUrl) {
     throw new Error('MongoDB connection URL is not defined');
 }
