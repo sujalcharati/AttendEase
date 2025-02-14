@@ -1,123 +1,177 @@
 "use client"
-import { useState } from 'react';
-import { Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 
-// Mock student data
-const students = [
-  { id: 1, name: 'Alice Johnson', class: 'Grade 10A' },
-  { id: 2, name: 'Bob Smith', class: 'Grade 10A' },
-  { id: 3, name: 'Charlie Brown', class: 'Grade 10A' },
-  // Add more students...
-];
+interface Subject {
+  id: string;
+  name: string;
+  classesAttended: number;
+  totalClasses: number;
+}
 
-export default function Homepage() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-  const [attendance, setAttendance] = useState<Record<number, string>>({});
+interface TimetableEntry {
+  day: string;
+  time: string;
+  subject: string;
+}
 
-  const handleAttendanceChange = (studentId: number, status: string) => {
-    setAttendance(prev => ({
-      ...prev,
-      [studentId]: status
+const Homepage: React.FC = () => {
+  const [subjects, setSubjects] = useState<Subject[]>(() => {
+    const saved = localStorage.getItem('subjects');
+    return saved ? JSON.parse(saved) : [];
+  });
+  
+  const [newSubject, setNewSubject] = useState('');
+  const [timetable, setTimetable] = useState<TimetableEntry[]>(() => {
+    const saved = localStorage.getItem('timetable');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Save to localStorage
+  useEffect(() => {
+    localStorage.setItem('subjects', JSON.stringify(subjects));
+    localStorage.setItem('timetable', JSON.stringify(timetable));
+  }, [subjects, timetable]);
+
+  // Attendance Handlers
+  const updateAttendance = (id: string, type: 'attended' | 'total') => {
+    setSubjects(subjects.map(subject => {
+      if (subject.id === id) {
+        return {
+          ...subject,
+          [type === 'attended' ? 'classesAttended' : 'totalClasses']: 
+            Math.max(0, subject[type === 'attended' ? 'classesAttended' : 'totalClasses'] + (type === 'attended' ? 1 : -1))
+        };
+      }
+      return subject;
     }));
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'present': return 'bg-green-100 border-green-500';
-      case 'absent': return 'bg-red-100 border-red-500';
-      case 'late': return 'bg-yellow-100 border-yellow-500';
-      default: return 'bg-gray-100 border-gray-300';
+  // Subject Management
+  const addSubject = () => {
+    if (newSubject.trim()) {
+      setSubjects([...subjects, {
+        id: Date.now().toString(),
+        name: newSubject.trim(),
+        classesAttended: 0,
+        totalClasses: 0
+      }]);
+      setNewSubject('');
     }
   };
 
+  const deleteSubject = (id: string) => {
+    setSubjects(subjects.filter(subject => subject.id !== id));
+  };
+
+  // Timetable Management
+  const updateTimetable = (day: string, time: string, subject: string) => {
+    setTimetable(prev => {
+      const existing = prev.find(entry => entry.day === day && entry.time === time);
+      if (existing) {
+        return prev.map(entry => 
+          entry.day === day && entry.time === time ? { ...entry, subject } : entry
+        );
+      }
+      return [...prev, { day, time, subject }];
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Student Attendance Tracker
-          </h1>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center bg-white px-4 py-2 rounded-lg border">
-              <Calendar className="w-5 h-5 mr-2 text-gray-500" />
-              <input
-                type="date"
-                value={selectedDate.toISOString().split('T')[0]}
-                onChange={(e) => setSelectedDate(new Date(e.target.value))}
-                className="outline-none"
-              />
-            </div>
-          </div>
-        </div>
+    <div className="p-6 max-w-6xl mx-auto">
+      {/* Header */}
+      <h1 className="text-3xl font-bold mb-8 text-blue-600">Student Dashboard</h1>
 
-        {/* Attendance Summary */}
-        <div className="grid grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm">
-            <h3 className="text-gray-500 text-sm mb-2">Total Students</h3>
-            <p className="text-3xl font-bold text-gray-800">{students.length}</p>
-          </div>
-          <div className="bg-green-50 p-6 rounded-xl shadow-sm">
-            <h3 className="text-green-600 text-sm mb-2">Present Today</h3>
-            <p className="text-3xl font-bold text-green-700">
-              {Object.values(attendance).filter(s => s === 'present').length}
-            </p>
-          </div>
-          <div className="bg-red-50 p-6 rounded-xl shadow-sm">
-            <h3 className="text-red-600 text-sm mb-2">Absent Today</h3>
-            <p className="text-3xl font-bold text-red-700">
-              {Object.values(attendance).filter(s => s === 'absent').length}
-            </p>
-          </div>
-        </div>
-
-        {/* Attendance Table */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          <div className="grid grid-cols-12 bg-gray-50 px-6 py-3 text-sm font-medium text-gray-500">
-            <div className="col-span-2">Student ID</div>
-            <div className="col-span-4">Student Name</div>
-            <div className="col-span-3">Class</div>
-            <div className="col-span-3">Attendance Status</div>
-          </div>
-
-          {students.map(student => (
-            <div 
-              key={student.id}
-              className="grid grid-cols-12 items-center px-6 py-4 border-b last:border-b-0 hover:bg-gray-50 transition-colors"
-            >
-              <div className="col-span-2 font-medium">#{student.id.toString().padStart(3, '0')}</div>
-              <div className="col-span-4">{student.name}</div>
-              <div className="col-span-3">{student.class}</div>
-              <div className="col-span-3">
-                <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${getStatusColor(attendance[student.id])}`}>
-                  <select
-                    value={attendance[student.id] || ''}
-                    onChange={(e) => handleAttendanceChange(student.id, e.target.value)}
-                    className="bg-transparent outline-none text-sm"
-                  >
-                    <option value="">Select Status</option>
-                    <option value="present">Present</option>
-                    <option value="absent">Absent</option>
-                    <option value="late">Late</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-8 flex justify-end gap-4">
-          <button className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-            Save Draft
-          </button>
-          <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            Submit Attendance
+      {/* Add Subject Section */}
+      <div className="mb-8 p-4 bg-white rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4">Manage Subjects</h2>
+        <div className="flex gap-4">
+          <input
+            type="text"
+            value={newSubject}
+            onChange={(e) => setNewSubject(e.target.value)}
+            placeholder="Enter new subject"
+            className="flex-1 p-2 border rounded"
+          />
+          <button 
+            onClick={addSubject}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Add Subject
           </button>
         </div>
       </div>
-    </div>
-  );
-}
 
+      {/* Attendance Tracking */}
+      <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {subjects.map(subject => (
+          <div key={subject.id} className="bg-white p-4 rounded-lg shadow">
+            <div className="flex justify-between items-start mb-3">
+              <h3 className="text-lg font-medium">{subject.name}</h3>
+              <button 
+                onClick={() => deleteSubject(subject.id)}
+                className="text-red-500 hover:text-red-700"
+              >
+                Delete
+              </button>
+            </div>
+            
+            <div className="flex items-center gap-4 mb-3">
+              <button 
+                onClick={() => updateAttendance(subject.id, 'attended')}
+                className="bg-green-500 text-white px-3 py-1 rounded"
+              >
+                +
+              </button>
+              <span>{subject.classesAttended}/{subject.totalClasses}</span>
+              <button 
+                onClick={() => updateAttendance(subject.id, 'total')}
+                className="bg-gray-500 text-white px-3 py-1 rounded"
+              >
+                +
+              </button>
+            </div>
 
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-500 rounded-full h-2"
+                style={{ 
+                  width: `${(subject.classesAttended / (subject.totalClasses || 1)) * 100}%`
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Timetable Section */}
+      <div className="bg-white p-4 rounded-lg shadow">
+        <h2 className="text-xl font-semibold mb-4">Weekly Timetable</h2>
+        <div className="grid grid-cols-5 gap-4">
+          {['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'].map(day => (
+            <div key={day} className="border p-2 rounded">
+              <h3 className="font-medium mb-2">{day}</h3>
+              {['9:00', '11:00', '14:00', '16:00'].map(time => (
+                <select
+                  key={time}
+                  value={timetable.find(entry => entry.day === day && entry.time === time)?.subject || ''}
+                  onChange={(e) => updateTimetable(day, time, e.target.value)}
+                  className="w-full mb-2 p-1 border rounded"
+                >
+                  <option value="">Select Subject</option>
+                  {subjects.map(subject => (
+                    <option key={subject.id} value={subject.name}>
+                      {subject.name}
+
+                      </option>
+                    ))}
+                  </select>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+  
+  export default Homepage;
