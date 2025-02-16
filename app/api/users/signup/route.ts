@@ -24,8 +24,11 @@ export async function POST(req: Request) {
 
     await newUser.save();
 
-    return new Response(JSON.stringify({ message: "User created" }), {
-      status: 201,
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': '/login'
+      }
     });
   } catch (error) {
     return new Response(JSON.stringify({ error: "Server error" }), {
