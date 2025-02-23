@@ -4,6 +4,15 @@ import React from 'react'
 import { FcGoogle } from 'react-icons/fc'
 
 const Signin = () => {
+
+
+    //  const googleprovider = async ()=>{
+
+    // const response = await fetch('api/auth/callback/google');
+    // const data =response.json();
+    // console.log(data);
+
+    // }
   return (
     <div className="flex min-h-screen bg-gray-100">
         <div className="bg-white  ml-28 mt-36 rounded-md shadow-md w-[34rem]">
@@ -38,7 +47,7 @@ const Signin = () => {
                     <span className='px-4 text-black'>OR</span>
                     <hr className='w-full border-gray-300' />
                 </div>
-                <button  onClick={() => signIn()} className=' mt-20 text-black  h-16 border border-solid border-black rounded-md flex items-center justify-center  w-full text-2xl'>
+                <button  onClick={ ()=>{ signIn('google') }} className=' mt-20 text-black  h-16 border border-solid border-black rounded-md flex items-center justify-center  w-full text-2xl'>
                     <FcGoogle className='w-10 h-10 mr-2 bg-white' />
                     Continue with Google
                 </button>
