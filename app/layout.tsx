@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
+import type React from "react"
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "./components/AppSidebar"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +32,17 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header/>
-        {children}
+           <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>
+            <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+              <SidebarTrigger />
+            </header>
+            {children}
+          </SidebarInset>
+        </SidebarProvider>
+        {/* <Header/>
+        {children} */}
       </body>
     </html>
   );

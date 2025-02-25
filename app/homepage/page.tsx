@@ -1,6 +1,7 @@
 import React from 'react'
 import Homepage from '../components/Homepage'
 import { getServerSession } from 'next-auth'
+import { AppSidebar } from '../components/AppSidebar';
 // import { redirect } from 'next/dist/server/api-utils';
 
 const homepage = async() => {
@@ -16,6 +17,7 @@ const homepage = async() => {
 
   return (
     <div>
+      <AppSidebar/>
       <Homepage />
     </div>
   )
