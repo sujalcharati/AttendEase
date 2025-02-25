@@ -1,10 +1,9 @@
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
-import type React from "react"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "./components/AppSidebar"
+import ClientLayout from "./components/ClientLayout"; // Import the client-side layout
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,26 +22,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Header/>
-           <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
-              <SidebarTrigger />
-            </header>
-            {children}
-          </SidebarInset>
-        </SidebarProvider>
-        {/* <Header/>
-        {children} */}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Header />
+        <ClientLayout>{children}</ClientLayout> {/* Wrap children inside ClientLayout */}
       </body>
     </html>
   );

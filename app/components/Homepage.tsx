@@ -77,8 +77,10 @@ const Homepage: React.FC = () => {
   };
 
   return (
+    
     <div className="p-6 max-w-6xl mx-auto bg-gray-100">
       {/* Header */}
+      
       <h1 className="text-3xl font-bold mb-8 text-blue-600">Student Dashboard</h1>
 
       {/* Add Subject Section */}
