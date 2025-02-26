@@ -4,28 +4,27 @@ import { Calendar, Home, MessageSquare, Users2, BookOpen, Bell } from "lucide-re
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
 } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 
 interface TimetableEntry {
   time: string
   subject: string
 }
 
-// Mock data - replace with your actual data
 const todayClasses: TimetableEntry[] = [
   { time: "9:00", subject: "Mathematics" },
   { time: "11:00", subject: "Physics" },
@@ -37,12 +36,12 @@ export function AppSidebar() {
   const pathname = usePathname()
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b border-border p-4">
-        <div className="flex items-center gap-2">
-          <BookOpen className="h-6 w-6" />
-          <span className="font-semibold">EduTrack</span>
-        </div>
+    <Sidebar className="border-r">
+      <SidebarHeader className="border-b p-4">
+        <Link href="/" className="flex items-center gap-2">
+          <BookOpen className="h-6 w-6 text-blue-600" />
+          <span className="font-semibold text-blue-600">Attendease</span>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
@@ -51,7 +50,7 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === "/"}>
-                  <Link href="/">
+                  <Link href="/homepage">
                     <Home className="h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
@@ -91,7 +90,10 @@ export function AppSidebar() {
             <Card className="border-none shadow-none">
               <CardContent className="p-2">
                 {todayClasses.map((entry, index) => (
-                  <div key={index} className="mb-2 flex items-center justify-between rounded-lg border p-2 text-sm">
+                  <div
+                    key={index}
+                    className="mb-2 flex items-center justify-between rounded-lg border bg-card p-2 text-sm"
+                  >
                     <span className="font-medium">{entry.time}</span>
                     <span className="text-muted-foreground">{entry.subject}</span>
                   </div>
@@ -102,7 +104,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-border p-4">
+      <SidebarFooter className="border-t p-4">
         <div className="flex items-center gap-4">
           <Avatar>
             <AvatarImage src="/placeholder.svg" />
