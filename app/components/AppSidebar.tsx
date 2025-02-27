@@ -40,7 +40,7 @@ export function AppSidebar() {
       <SidebarHeader className="border-b p-4">
         <Link href="/" className="flex items-center gap-2">
           <BookOpen className="h-6 w-6 text-blue-600" />
-          <span className="font-semibold text-blue-600">Attendease</span>
+          <span className="font-semibold text-blue-600"> Attendance </span>
         </Link>
       </SidebarHeader>
       <SidebarContent>
@@ -58,9 +58,9 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === "/attendance"}>
-                  <Link href="/attendance">
+                  <Link href="/timetable">
                     <Calendar className="h-4 w-4" />
-                    <span>Attendance</span>
+                    <span>Timetable</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

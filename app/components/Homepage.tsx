@@ -119,7 +119,6 @@ export function Homepage() {
           </Card>
         ))}
       </div>
-
       <Card>
         <CardHeader>
           <CardTitle>Weekly Timetable</CardTitle>
@@ -135,7 +134,7 @@ export function Homepage() {
                       <SelectValue placeholder={time} />
                     </SelectTrigger>
                     <SelectContent>
-                      {subjects.map((subject) => (
+                      {subjects.map((subject:any) => (
                         <SelectItem key={subject.id} value={subject.id}>
                           {subject.name}
                         </SelectItem>
@@ -148,6 +147,7 @@ export function Homepage() {
           </div>
         </CardContent>
       </Card>
+      
     </div>
   )
 }
