@@ -119,35 +119,53 @@ export function Homepage() {
           </Card>
         ))}
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Weekly Timetable</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-5 gap-4">
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
-              <div key={day} className="space-y-2">
-                <h3 className="font-medium">{day}</h3>
-                {["9:00", "11:00", "14:00", "16:00"].map((time) => (
-                  <Select key={`${day}-${time}`}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={time} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {subjects.map((subject:any) => (
-                        <SelectItem key={subject.id} value={subject.id}>
-                          {subject.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ))}
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
       
+      
+      <Card>
+  <CardHeader>
+    <CardTitle className="text-center text-xl">Weekly Timetable</CardTitle>
+  </CardHeader>
+
+  <CardContent className="overflow-x-auto">
+    <div className="grid grid-cols-[100px_repeat(5,1fr)] gap-2">
+      {/* Header Row */}
+      <div className="font-bold text-center">Time</div>
+      {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+        <div key={day} className="font-bold text-center">{day}</div>
+      ))}
+
+      {/* Time Slot Rows */}
+      {["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"].map((time) => (
+        <>
+          {/* Time Cell */}
+          <div key={time} className="font-medium flex items-center justify-center">{time}</div>
+
+          {/* Day Cells with Cards */}
+          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+            <Card key={`${day}-${time}`} className="shadow-md border border-gray-300">
+              <CardContent className="p-2">
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {subjects.map((subject: any) => (
+                      <SelectItem key={subject.id} value={subject.id}>
+                        {subject.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+          ))}
+        </>
+      ))}
+    </div>
+  </CardContent>
+</Card>
+
+
     </div>
   )
 }
