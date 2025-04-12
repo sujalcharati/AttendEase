@@ -1,3 +1,5 @@
+"use client" 
+import { signIn } from 'next-auth/react';
 import React from 'react'
 import { FcGoogle } from 'react-icons/fc';
 
@@ -18,10 +20,11 @@ const Landingpage = () => {
                 <div> the free,you’ve been looking for.</div>
                    
             </div>
-            <button className='ml-28 mt-10 bg-blue-500 w-64 h-16 rounded-md flex items-center justify-center'>
-               
-
-                <FcGoogle className='w-10 h-10 mr-2 bg-white' />
+            <button 
+                className='ml-28 mt-10 bg-blue-500 w-64 h-16 rounded-md flex items-center justify-center text-white' 
+                onClick={() => signIn('google', { callbackUrl: '/homepage' })}
+            >
+                <FcGoogle className='w-10 h-10 mr-2 bg-white rounded-sm' />
                 Signup with Google
             </button>
                 </div>
