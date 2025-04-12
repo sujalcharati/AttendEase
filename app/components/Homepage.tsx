@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useSession } from "next-auth/react"
 
 interface Subject {
   id: string
@@ -18,19 +19,40 @@ interface Subject {
 export function Homepage() {
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [newSubject, setNewSubject] = useState("")
-
-  const addSubject = () => {
+  const { data: session } = useSession();
+  console.log(session);
+ 
+  if(session && session.user){
+    console.log('user id:', (session.user as any).id);
+  }
+  const addSubject = async () => {
     if (newSubject.trim()) {
-      setSubjects([
-        ...subjects,
-        {
-          id: Date.now().toString(),
-          name: newSubject.trim(),
-          classesAttended: 0,
-          totalClasses: 0,
-        },
-      ])
-      setNewSubject("")
+      const newSubjectData = {
+        id: Date.now().toString(),
+        name: newSubject.trim(),
+        classesAttended: 0,
+        totalClasses: 0,
+      }
+
+      try {
+        const response = await fetch("/api/subjects", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(newSubjectData),
+        })
+
+        if (response.ok) {
+          setSubjects([...subjects, newSubjectData])
+          setNewSubject("")
+        } else {
+          console.error("Failed to add subject")
+        }
+      }
+       catch (error) {
+        console.error("Error adding subject:", error)
+      }
     }
   }
 
