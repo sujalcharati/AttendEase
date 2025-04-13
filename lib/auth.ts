@@ -122,6 +122,7 @@ export const NEXT_AUTH_CONFIG = {
     },
     session: async ({ session, token }: any) => {
       if (session.user) {
+        console.log(session)
         session.user.id = token.sub;  // Using "sub" here too
       }
       return session;

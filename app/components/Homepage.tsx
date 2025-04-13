@@ -20,15 +20,15 @@ export function Homepage() {
   const [subjects, setSubjects] = useState<Subject[]>([])
   const [newSubject, setNewSubject] = useState("")
   const { data: session } = useSession();
-  console.log(session);
+  // console.log(session);
  
   if(session && session.user){
-    console.log('user id:', (session.user as any).id);
+    // console.log('user id:', (session.user as any).id);
   }
   const addSubject = async () => {
     if (newSubject.trim()) {
       const newSubjectData = {
-        id: Date.now().toString(),
+        // id: Date.now().toString(),
         name: newSubject.trim(),
         classesAttended: 0,
         totalClasses: 0,
@@ -44,14 +44,18 @@ export function Homepage() {
         })
 
         if (response.ok) {
-          setSubjects([...subjects, newSubjectData])
+          const data = await response.json();
+          setSubjects([...subjects, data])
           setNewSubject("")
         } else {
-          console.error("Failed to add subject")
+          const errorData = await response.json();
+        console.error("Failed to add subject:", errorData);
+        alert(`Failed to add subject: ${errorData.error || 'Unknown error'}`);
         }
       }
        catch (error) {
         console.error("Error adding subject:", error)
+        alert("Error connecting to the server. Please try again.");
       }
     }
   }
@@ -117,7 +121,7 @@ export function Homepage() {
                     Present
                   </Button>
                   <span className="text-sm text-muted-foreground">
-                    {subject.classesAttended}/{subject.totalClasses} classes
+                    {subject.classesAttended}/{subject.totalClasses} 
                   </span>
                   <Button size="sm" variant="outline" onClick={() => updateAttendance(subject.id, "missed")}>
                     Absent

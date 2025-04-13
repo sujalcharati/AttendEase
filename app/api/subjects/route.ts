@@ -1,90 +1,52 @@
-// import { Subject } from '@/models/attendance';
-// import { NextResponse } from 'next/server';
-
-// export const POST = async (request: Request) => {
-
-//     try {
-//         const subjectname = await request.json()
-        
-//         if(!subjectname){
-//          return NextResponse.json({
-//             msg: 'name field not found'
-//          }, { status: 400 });
-//         }
-
-//         try {
-//             const userId = request.headers.get('user-id');
-//             if (!userId) {
-//                 return NextResponse.json({
-//                     msg: 'User ID not found in headers'
-//                 }, { status: 400 });
-//             }
-
-//             const existingSubject = await Subject.findOne({ 
-//                 name: subjectname.name.trim(),
-//                 user: userId
-//             });
-//             if (existingSubject) {
-//               console.log('Subject found:', existingSubject);
-//             } else {
-//               console.log('No subject found with the given name.');
-//             }
-//           } catch (error) {
-//             console.error('Error querying the database:', error);
-//           }
 
 
-//         const subject = new Subject({
-//             name: subjectname.name.trim(),
-//             user: request.headers.get('user-id')
-//         });
 
-//         await subject.save();
-//         console.log('New subject created:', subject);
-//         return NextResponse.json({ message: 'Data received successfully', subjectname }, { status: 200 });
-//     } catch (error) {
-        
-//     }
-// };
-
-import { NextResponse } from 'next/server';
+import { connectDB } from '@/lib/db';
+import Subject from '@/models/attendance';
 import { getServerSession } from 'next-auth';
-import {NEXT_AUTH_CONFIG}  from '@/lib/auth';
-import { Subject } from '@/models/attendance';
+import { NEXT_AUTH_CONFIG } from '@/lib/auth'; // Update with your actual path
+import { NextRequest, NextResponse } from 'next/server';
+import mongoose from 'mongoose';
+export async function POST(request :NextRequest) {
+  try {
+    // Connect to database
+    await connectDB();
+    
+    // Get current user session
+    const session = await getServerSession(NEXT_AUTH_CONFIG);
+    console.log(session);
+    
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+    
+    
+    const userId = session.user.id;
 
-export const POST = async (request: Request) => {
-  const session = await getServerSession( NEXT_AUTH_CONFIG );
-  console.log(session)
-  
-
-  if (!session || !session.user?.id) {
-    return NextResponse.json({ msg: 'Unauthorized' }, { status: 401 });
-  }
-
-  const body = await request.json();
-
-  if (!body?.name || typeof body.name !== 'string') {
-    return NextResponse.json({ msg: 'name field is required' }, { status: 400 });
-  }
-
-  const existingSubject = await Subject.findOne({
-    name: body.name.trim(),
-    user: session.user.id,
+    
+    // Get data from request body
+    const body = await request.json();
+    const { name, classesAttended, totalClasses } = body;
+    
+    if (!name) {
+      return NextResponse.json({ error: 'Subject name is required' }, { status: 400 });
+    }
+    
+// Create new subject
+  const newSubject = await Subject.create({
+    name,
+    classesAttended: classesAttended || 0,
+    totalClasses: totalClasses || 0,
+    user: userId,
+    userId: new mongoose.Types.ObjectId(userId)
   });
-
-  if (existingSubject) {
-    return NextResponse.json({ msg: 'Subject already exists' }, { status: 409 });
+    
+    return NextResponse.json(newSubject, { status: 201 });
+  } catch (error: any) {
+    console.error('Error creating subject:', error);
+    return NextResponse.json(
+      { error: 'Failed to create subject', details: error.message },
+      { status: 500 }
+    );
   }
-
-  const subject = new Subject({
-    name: body.name.trim(),
-    user: session.user.id,
-  });
-
-  await subject.save();
-
-  return NextResponse.json(
-    { message: 'Subject created successfully', subject },
-    { status: 201 }
-  );
-};
+}
