@@ -1,19 +1,17 @@
-
-
-
-import { connectDB } from '@/lib/db';
+import { connectDB } from '@/lib/connectDB';
 import Subject from '@/models/attendance';
 import { getServerSession } from 'next-auth';
-import { NEXT_AUTH_CONFIG } from '@/lib/auth'; // Update with your actual path
+import  {authOptions}  from '@/app/api/auth/[...nextauth]/route'; // Update with your actual path
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
+
 export async function POST(request :NextRequest) {
   try {
     // Connect to database
     await connectDB();
     
     // Get current user session
-    const session = await getServerSession(NEXT_AUTH_CONFIG);
+    const session = await getServerSession(authOptions);
     console.log(session);
     
     if (!session || !session.user) {
@@ -21,7 +19,8 @@ export async function POST(request :NextRequest) {
     }
     
     
-    const userId = session.user.id;
+    // const userId = session.user.id;
+    const userId = new mongoose.Types.ObjectId(session.user.id);
 
     
     // Get data from request body
@@ -37,8 +36,8 @@ export async function POST(request :NextRequest) {
     name,
     classesAttended: classesAttended || 0,
     totalClasses: totalClasses || 0,
-    user: userId,
-    userId: new mongoose.Types.ObjectId(userId)
+    // user: userId,
+    userId
   });
     
     return NextResponse.json(newSubject, { status: 201 });

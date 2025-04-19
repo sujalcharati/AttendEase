@@ -45,6 +45,7 @@ export function Homepage() {
 
         if (response.ok) {
           const data = await response.json();
+          console.log(data)
           setSubjects([...subjects, data])
           setNewSubject("")
         } else {
