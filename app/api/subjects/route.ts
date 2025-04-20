@@ -5,6 +5,44 @@ import  {authOptions}  from '@/app/api/auth/[...nextauth]/route'; // Update with
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 
+
+
+
+export async function GET(request:NextRequest){
+ 
+  try{
+          
+    await connectDB();
+    const session = await getServerSession(authOptions);
+
+    if(!session || !session.user){
+     return NextResponse.json(
+      {error:"Not authenticated"},
+      { status:401}
+     )
+    }
+
+    const userId = new mongoose.Types.ObjectId(session.user.id);
+
+    const subject = await Subject.findOne({ userId });
+    return NextResponse.json(
+      {subject},
+      {status:201}
+    )
+    
+  }
+  catch(error: any){
+   console.log(" error in fetching the subject",error);
+   return NextResponse.json(
+    {
+      error:" there is error in fetching the subjects ",
+      details: error.message
+    },
+    {status:501}
+   )
+  }
+} 
+
 export async function POST(request :NextRequest) {
   try {
     // Connect to database
