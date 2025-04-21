@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { Plus, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -61,6 +61,34 @@ export function Homepage() {
     }
   }
 
+
+
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      if (!session?.user) return; // Only fetch if user is logged in
+      
+      try {
+        const response = await fetch('/api/subjects', {
+          method: 'GET',
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Fetched subjects:', data);
+          setSubjects(data);
+        } else {
+          console.error("Failed to fetch subjects");
+        }
+      } catch (error) {
+        console.error("Error fetching subjects:", error);
+      }
+    };
+    
+    fetchSubjects();
+  }, [session]); // Re-run when session changes
+
+
   const updateAttendance = (id: string, type: "attended" | "missed") => {
     setSubjects(
       subjects.map((subject) => {
@@ -107,7 +135,7 @@ export function Homepage() {
       </Card>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {subjects.map((subject) => (
+        {Array.isArray(subjects) && subjects.map((subject) => (
           <Card key={subject.id}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">{subject.name}</CardTitle>
@@ -154,7 +182,7 @@ export function Homepage() {
   </CardHeader>
 
   <CardContent className="overflow-x-auto">
-    <div className="grid grid-cols-[100px_repeat(5,1fr)] gap-2">
+    <div  className="grid grid-cols-[100px_repeat(5,1fr)] gap-2">
       {/* Header Row */}
       <div className="font-bold text-center">Time</div>
       {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
@@ -163,9 +191,9 @@ export function Homepage() {
 
       {/* Time Slot Rows */}
       {["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"].map((time) => (
-        <>
+        <React.Fragment key={time}>
           {/* Time Cell */}
-          <div key={time} className="font-medium flex items-center justify-center">{time}</div>
+          <div className="font-medium flex items-center justify-center">{time}</div>
 
           {/* Day Cells with Cards */}
           {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
@@ -176,7 +204,7 @@ export function Homepage() {
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {subjects.map((subject: any) => (
+                    {Array.isArray(subjects) && subjects.map((subject: any) => (
                       <SelectItem key={subject.id} value={subject.id}>
                         {subject.name}
                       </SelectItem>
@@ -186,7 +214,7 @@ export function Homepage() {
               </CardContent>
             </Card>
           ))}
-        </>
+        </React.Fragment>
       ))}
     </div>
   </CardContent>
