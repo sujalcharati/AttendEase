@@ -46,7 +46,7 @@ export function Homepage() {
         if (response.ok) {
           const data = await response.json();
           console.log(data)
-          setSubjects([...subjects, data])
+          setSubjects(prevSubjects => Array.isArray(prevSubjects) ? [...prevSubjects, data] : [data])
           setNewSubject("")
         } else {
           const errorData = await response.json();
@@ -86,7 +86,7 @@ export function Homepage() {
     };
     
     fetchSubjects();
-  }, [session]); // Re-run when session changes
+  }, [session]);
 
 
   const updateAttendance = (id: string, type: "attended" | "missed") => {

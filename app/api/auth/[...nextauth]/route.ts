@@ -137,27 +137,27 @@ export  const  authOptions: AuthOptions = {
       async authorize(credentials) {
         try {
           // Call your backend API to authenticate
-          const response = await fetch(`http://be.coduter.com/authenticate`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials?.email,
-              password: credentials?.password
-            })
-          });
+          // const response = await fetch(`http://be.coduter.com/authenticate`, {
+          //   method: 'POST',
+          //   headers: { 'Content-Type': 'application/json' },
+          //   body: JSON.stringify({
+          //     email: credentials?.email,
+          //     password: credentials?.password
+          //   })
+          // });
           
-          const data = await response.json();
+          // const data = await response.json();
           
-          if (response.ok && data) {
-            // Return user object and tokens that will be passed to callbacks
-            return {
-              id: data.user.id,
-              name: data.user.name,
-              email: data.user.email,
-              accessToken: data.accessToken,
-              idToken: data.idToken,  // Your backend should generate this
-            };
-          }
+          // if (response.ok && data) {
+          //   // Return user object and tokens that will be passed to callbacks
+          //   return {
+          //     id: data.user.id,
+          //     name: data.user.name,
+          //     email: data.user.email,
+          //     accessToken: data.accessToken,
+          //     idToken: data.idToken,  // Your backend should generate this
+          //   };
+          // }
           
           // If authentication fails
           return null;

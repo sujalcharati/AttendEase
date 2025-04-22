@@ -1,7 +1,7 @@
 import { connectDB } from '@/lib/connectDB';
 import Subject from '@/models/attendance';
 import { getServerSession } from 'next-auth';
-import  {authOptions}  from '@/app/api/auth/[...nextauth]/route'; // Update with your actual path
+import  {authOptions}  from '@/app/api/auth/[...nextauth]/route'; 
 import { NextRequest, NextResponse } from 'next/server';
 import mongoose from 'mongoose';
 
@@ -14,6 +14,7 @@ export async function GET(request:NextRequest){
           
     await connectDB();
     const session = await getServerSession(authOptions);
+    console.log(session);
 
     if(!session || !session.user){
      return NextResponse.json(
@@ -22,11 +23,31 @@ export async function GET(request:NextRequest){
      )
     }
 
-    const userId = new mongoose.Types.ObjectId(session.user.id);
+    // const userId = new mongoose.Types.ObjectId(session.userId);
+    const userId = session.userId;
 
-    const subject = await Subject.findOne({ userId });
+
+    if (!userId) {
+      console.log("Full session object:", JSON.stringify(session));
+      
+      // Try alternate locations based on your session structure
+      // Option 1: If userId is in the token instead
+      return NextResponse.json(
+        {error: "User ID not found in session"},
+        {status: 400}
+      );
+    }
+
+
+    // const subjects = await Subject.find({ userId });
+    const subjects = await Subject.find({ });
+    console.log("All subjects:", subjects);
+
+
+
+    // const subject = await Subject.findOne({ userId });
     return NextResponse.json(
-      {subject},
+      subjects,
       {status:201}
     )
     
@@ -59,6 +80,7 @@ export async function POST(request :NextRequest) {
     
     // const userId = session.user.id;
     const userId = new mongoose.Types.ObjectId(session.user.id);
+    // const userId = session.userId;
 
     
     // Get data from request body

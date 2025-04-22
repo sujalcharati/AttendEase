@@ -42,9 +42,9 @@ const SubjectSchema = new mongoose.Schema({
     default: 0
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Users',
-    required: true
+    type: String,
+    required: true,
+    index: true
   }
 }, { timestamps: true });
 
