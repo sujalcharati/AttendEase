@@ -410,6 +410,61 @@ export function Homepage() {
     setTimetable(slots)
   }, [])
 
+  // const handleTimetableChange = async (day: string, time: string, subjectId: string) => {
+  //   console.log(`Changing timetable for ${day} at ${time} to subject ID: ${subjectId}`);
+    
+  //   const newSubjectId = subjectId === "none" ? null : subjectId;
+    
+  //   // Find the selected subject for logging
+  //   const selectedSubject = subjects.find(s => s.id === newSubjectId);
+  //   console.log(`Selected subject: ${selectedSubject?.name || 'None'}`);
+    
+  //   // Create a new timetable array with the updated slot
+  //   const updatedTimetable = timetable.map(slot => {
+  //     if (slot.day === day && slot.time === time) {
+  //       return { ...slot, subjectId: newSubjectId };
+  //     }
+  //     return slot;
+  //   });
+
+  //   // Update the state
+  //   setTimetable(updatedTimetable);
+  //   console.log("Updated timetable:", updatedTimetable);
+
+  //   // Save to backend
+  //   try {
+  //     const response = await fetch('/api/timetable', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({
+  //         day,
+  //         time,
+  //         subjectId: newSubjectId
+  //       })
+  //     });
+
+  //     if (!response.ok) {
+  //       console.error('Failed to save timetable change');
+  //     } else {
+  //       console.log('Successfully saved timetable change to backend');
+        
+  //       // Reload timetable data after saving
+  //       const refreshResponse = await fetch('/api/timetable');
+  //       if (refreshResponse.ok) {
+  //         const refreshedData = await refreshResponse.json();
+  //         console.log('Refreshed timetable data:', refreshedData);
+  //         setTimetable(refreshedData);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error saving timetable:', error);
+  //   }
+  // }
+
+
+
   const handleTimetableChange = async (day: string, time: string, subjectId: string) => {
     console.log(`Changing timetable for ${day} at ${time} to subject ID: ${subjectId}`);
     
@@ -426,11 +481,11 @@ export function Homepage() {
       }
       return slot;
     });
-
-    // Update the state
+  
+    // Update the state immediately
     setTimetable(updatedTimetable);
-    console.log("Updated timetable:", updatedTimetable);
-
+    console.log("Updated timetable state:", updatedTimetable);
+  
     // Save to backend
     try {
       const response = await fetch('/api/timetable', {
@@ -444,42 +499,82 @@ export function Homepage() {
           subjectId: newSubjectId
         })
       });
-
+  
       if (!response.ok) {
-        console.error('Failed to save timetable change');
+        const errorData = await response.json();
+        console.error('Failed to save timetable change:', errorData);
+        alert('Error saving timetable');
       } else {
         console.log('Successfully saved timetable change to backend');
-        
-        // Reload timetable data after saving
-        const refreshResponse = await fetch('/api/timetable');
-        if (refreshResponse.ok) {
-          const refreshedData = await refreshResponse.json();
-          console.log('Refreshed timetable data:', refreshedData);
-          setTimetable(refreshedData);
-        }
       }
     } catch (error) {
       console.error('Error saving timetable:', error);
+      alert('Error connecting to server');
     }
   }
 
+
   // Load timetable data when component mounts or subjects change
+  // useEffect(() => {
+  //   const loadTimetable = async () => {
+  //     try {
+  //       const response = await fetch('/api/timetable');
+  //       if (response.ok) {
+  //         const data = await response.json();
+  //         console.log('Loaded timetable data:', data);
+  //         setTimetable(data);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error loading timetable:', error);
+  //     }
+  //   };
+
+  //   loadTimetable();
+  // }, []);
+
+
+
+
   useEffect(() => {
     const loadTimetable = async () => {
+      if (!session?.user) return; // Only fetch if user is logged in
+      
       try {
         const response = await fetch('/api/timetable');
         if (response.ok) {
           const data = await response.json();
           console.log('Loaded timetable data:', data);
-          setTimetable(data);
+          
+          // Create default slots if needed
+          const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+          const times = ["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"];
+          
+          // Create a complete timetable with all slots
+          const completeSlots: TimetableSlot[] = [];
+          days.forEach(day => {
+            times.forEach(time => {
+              const existingSlot = data.find((s: TimetableSlot) => s.day === day && s.time === time);
+              if (existingSlot) {
+                completeSlots.push(existingSlot);
+              } else {
+                completeSlots.push({
+                  day,
+                  time,
+                  subjectId: null
+                });
+              }
+            });
+          });
+          
+          setTimetable(completeSlots);
         }
       } catch (error) {
         console.error('Error loading timetable:', error);
       }
     };
-
+  
     loadTimetable();
-  }, []);
+  }, [session]);
 
   // Load subjects when user is logged in
   useEffect(() => {
@@ -492,9 +587,18 @@ export function Homepage() {
         });
         
         if (response.ok) {
-          const data = await response.json();
-          console.log('Fetched subjects:', data);
-          setSubjects(data);
+          const rawdata = await response.json();
+          console.log('Fetched subjects:', rawdata);
+          const transformedData = rawdata.map((subject: any) => ({
+            id: subject._id,           
+            name: subject.name,
+            classesAttended: subject.classesAttended,
+            totalClasses: subject.totalClasses
+          }));
+          
+          console.log('Transformed subjects:', transformedData);
+          setSubjects(transformedData);
+
         } else {
           console.error("Failed to fetch subjects");
         }
@@ -593,68 +697,64 @@ export function Homepage() {
       </div>
       
       <Card>
-        <CardHeader>
-          <CardTitle className="text-center text-xl">Weekly Timetable</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
-          <div className="grid grid-cols-[100px_repeat(5,1fr)] gap-2">
-            {/* Header Row */}
-            <div className="font-bold text-center p-2 bg-gray-100 rounded">Time</div>
-            {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
-              <div key={day} className="font-bold text-center p-2 bg-gray-100 rounded">{day}</div>
-            ))}
+  <CardHeader>
+    <CardTitle className="text-center text-xl">Weekly Timetable</CardTitle>
+  </CardHeader>
+  <CardContent className="overflow-x-auto">
+    <div className="grid grid-cols-[100px_repeat(5,1fr)] gap-2">
+      {/* Header Row */}
+      <div className="font-bold text-center p-2 bg-gray-100 rounded">Time</div>
+      {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => (
+        <div key={day} className="font-bold text-center p-2 bg-gray-100 rounded">{day}</div>
+      ))}
 
-            {/* Time Slot Rows */}
-            {["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"].map((time) => (
-              <React.Fragment key={time}>
-                {/* Time Cell */}
-                <div className="font-medium flex items-center justify-center p-2 bg-gray-50 rounded">{time}</div>
+      {/* Time Slot Rows */}
+      {["9:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"].map((time) => (
+        <React.Fragment key={time}>
+          {/* Time Cell */}
+          <div className="font-medium flex items-center justify-center p-2 bg-gray-50 rounded">{time}</div>
 
-                {/* Day Cells with Cards */}
-                {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => {
-                  // Find the current slot in the timetable
-                  const slot = timetable.find(s => s.day === day && s.time === time);
-                  
-                  // Log the slot for debugging
-                  console.log(`Slot for ${day} at ${time}:`, slot);
-                  
-                  // Find the selected subject based on the slot's subjectId
-                  const selectedSubject = subjects.find(s => s.id === slot?.subjectId);
-                  console.log(`Selected subject:`, selectedSubject);
-                  
-                  // Determine the value for the Select component
-                  const selectValue = slot?.subjectId || "none";
-                  
-                  return (
-                    <Card key={`${day}-${time}`} className="shadow-sm border border-gray-200">
-                      <CardContent className="p-2">
-                        <Select
-                          value={selectValue}
-                          onValueChange={(value) => handleTimetableChange(day, time, value)}
-                        >
-                          <SelectTrigger className="w-full h-8">
-                            <SelectValue placeholder="Select Subject">
-                              {selectedSubject ? selectedSubject.name : "None"}
-                            </SelectValue>
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
-                            {subjects.map((subject) => (
-                              <SelectItem key={subject.id} value={subject.id}>
-                                {subject.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+          {/* Day Cells with Cards */}
+          {["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"].map((day) => {
+            // Find the current slot in the timetable
+            const slot = timetable.find(s => s.day === day && s.time === time);
+            
+            // Find the selected subject based on the slot's subjectId
+            const selectedSubject = subjects.find(s => s.id === slot?.subjectId);
+            
+            // Determine the value for the Select component
+            const selectValue = slot?.subjectId || "none";
+            
+            return (
+              <Card key={`${day}-${time}`} className="shadow-sm border border-gray-200">
+                <CardContent className="p-2">
+                  <Select
+                    value={selectValue}
+                    onValueChange={(value) => handleTimetableChange(day, time, value)}
+                  >
+                    <SelectTrigger className="w-full h-8">
+                      <SelectValue placeholder="Select Subject">
+                        {selectedSubject ? selectedSubject.name : "None"}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">None</SelectItem>
+                      {subjects.map((subject) => (
+                        <SelectItem key={subject.id} value={subject.id}>
+                          {subject.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
+            );
+          })}
+        </React.Fragment>
+      ))}
+    </div>
+  </CardContent>
+</Card>
     </div>
   )
 }
