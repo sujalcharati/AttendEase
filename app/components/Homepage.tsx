@@ -139,6 +139,7 @@ export function Homepage() {
       try {
         const response = await fetch('/api/timetable');
         if (response.ok) {
+          
           const data = await response.json();
           console.log('Loaded timetable data:', data);
           

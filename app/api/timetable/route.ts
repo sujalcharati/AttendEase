@@ -12,13 +12,11 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const userId = session.userId;
     await connectDB()
-    const userId = (session.user as any).id
 
-    // Get the user's timetable slots
-    const timetableSlots = await TimetableSlot.find({ userId })
-
-    return NextResponse.json(timetableSlots)
+    const slots = await TimetableSlot.find({ userId })
+    return NextResponse.json(slots)
   } catch (error) {
     console.error("Error fetching timetable:", error)
     return NextResponse.json(
@@ -36,33 +34,66 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    // Ensure userId exists in session
+    const userId = session.userId;
+    if (!userId) {
+      console.error("No userId found in session:", session.user)
+      return NextResponse.json(
+        { error: "User ID not found in session" },
+        { status: 400 }
+      )
+    }
+
     const { day, time, subjectId } = await request.json()
-    const userId = (session.user as any).id
+
+    if (!day || !time) {
+      return NextResponse.json(
+        { error: "Day and time are required" },
+        { status: 400 }
+      )
+    }
 
     await connectDB()
 
-    // Check if the slot already exists
-    const existingSlot = await TimetableSlot.findOne({ userId, day, time })
+    // Log the data being saved
+    console.log("Saving timetable slot:", { userId, day, time, subjectId })
 
+    // Find existing slot
+    const existingSlot = await TimetableSlot.findOne({
+      userId,
+      day,
+      time
+    })
+
+    let slot
     if (existingSlot) {
       // Update existing slot
       existingSlot.subjectId = subjectId
-      await existingSlot.save()
-      return NextResponse.json(existingSlot)
+      slot = await existingSlot.save()
     } else {
       // Create new slot
-      const newSlot = await TimetableSlot.create({
+      slot = await TimetableSlot.create({
         userId,
         day,
         time,
         subjectId
       })
-      return NextResponse.json(newSlot)
     }
-  } catch (error) {
-    console.error("Error saving timetable:", error)
+
+    return NextResponse.json(slot)
+  } catch (error: any) {
+    // More detailed error logging
+    console.error("Error saving timetable:", {
+      message: error.message,
+      stack: error.stack,
+      errors: error.errors
+    })
+    
     return NextResponse.json(
-      { error: "Failed to save timetable" },
+      { 
+        error: "Failed to save timetable",
+        details: error.message
+      },
       { status: 500 }
     )
   }
