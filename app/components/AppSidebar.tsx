@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, Home, MessageSquare, Users2, BookOpen, Bell } from "lucide-react"
+import { Calendar, Home, MessageSquare, Users2, BookOpen, Bell, Search } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -57,6 +57,14 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive={pathname === "/search"}>
+                  <Link href="/search">
+                    <Search className="h-4 w-4" />
+                    <span>Search</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={pathname === "/attendance"}>
                   <Link href="/timetable">
                     <Calendar className="h-4 w-4" />
@@ -65,10 +73,10 @@ export function AppSidebar() {
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive={pathname === "/social"}>
-                  <Link href="/social">
+                <SidebarMenuButton asChild isActive={pathname === "/messages"}>
+                  <Link href="/messages">
                     <MessageSquare className="h-4 w-4" />
-                    <span>Social</span>
+                    <span>messages</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

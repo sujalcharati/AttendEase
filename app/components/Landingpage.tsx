@@ -16,7 +16,7 @@ const Landingpage = () => {
                 </div>
             </div>
             <div className='text-black flex flex-col pl-28 mt-4 text-2xl'>
-                <div>Say goodbye to boring forms.Meet Tally — intuitive </div>
+                <div>Say goodbye to boring forms.Meet Attendease — intuitive </div>
                 <div> the free,you’ve been looking for.</div>
                    
             </div>

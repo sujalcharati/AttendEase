@@ -21,6 +21,13 @@ export function CreateGroupDialog() {
 
   const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault()
+    console.log("Creating group...")
+    const name = e.target.name.value
+    const type = e.target.type.value
+    const description = e.target.description.value
+
+
+
     // Add logic to create group
     setOpen(false)
   }
