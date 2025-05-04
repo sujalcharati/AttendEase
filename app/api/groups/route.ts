@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/connectDB"
-import Group from "@/models/Group"
+import Group from "../../../models/Group"
 import crypto from "crypto"
 
 // GET /api/groups - Get all groups for the current user

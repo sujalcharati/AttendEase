@@ -79,7 +79,7 @@ export async function POST(request :NextRequest) {
     
     
     // const userId = session.user.id;
-    const userId = new mongoose.Types.ObjectId(session.user.id);
+    const userId = new mongoose.Types.ObjectId(session.userId);
     // const userId = session.userId;
 
     
@@ -105,6 +105,39 @@ export async function POST(request :NextRequest) {
     console.error('Error creating subject:', error);
     return NextResponse.json(
       { error: 'Failed to create subject', details: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const subjectId = searchParams.get('id');
+
+    if (!subjectId) {
+      return NextResponse.json({ error: 'Subject ID is required' }, { status: 400 });
+    }
+
+    // Delete the subject
+    const deletedSubject = await Subject.findByIdAndDelete(subjectId);
+
+    if (!deletedSubject) {
+      return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Subject deleted successfully' }, { status: 200 });
+  } catch (error: any) {
+    console.error('Error deleting subject:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete subject', details: error.message },
       { status: 500 }
     );
   }

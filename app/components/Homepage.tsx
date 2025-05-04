@@ -237,8 +237,24 @@ export function Homepage() {
     }
   }
 
-  const deleteSubject = (id: string) => {
-    setSubjects(subjects.filter((subject) => subject.id !== id))
+  const deleteSubject = async (id: string) => {
+    try {
+      const response = await fetch(`/api/subjects?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Only update the UI if the deletion was successful
+        setSubjects(subjects.filter((subject) => subject.id !== id));
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to delete subject:", errorData);
+        alert(`Failed to delete subject: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error deleting subject:", error);
+      alert("Error connecting to the server. Please try again.");
+    }
   }
 
   return (

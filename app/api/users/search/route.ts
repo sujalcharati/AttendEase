@@ -3,7 +3,6 @@ import Users from '@/models/user'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../auth/[...nextauth]/route'
-
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
@@ -23,7 +22,7 @@ export async function GET(request: Request) {
         { name: { $regex: query, $options: 'i' } },
         { email: { $regex: query, $options: 'i' } }
       ]
-    }).select('_id name email image isOnline -__v')
+    }).select('_id name email image isOnline')
 
     return NextResponse.json(users)
   } catch (error) {
