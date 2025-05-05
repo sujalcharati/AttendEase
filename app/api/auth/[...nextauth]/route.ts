@@ -5,6 +5,8 @@ import { Session } from "next-auth";
 import { Account, User, Profile } from "next-auth";
 import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials";
+import { NextRequest } from "next/server";
+
 // Extend the built-in types
 declare module "next-auth" {
   interface Session {
@@ -97,6 +99,11 @@ export const authOptions: AuthOptions = {
 // Create the route handlers
 const handler = NextAuth(authOptions);
 
-// Export the route handlers
-export const GET = handler;
-export const POST = handler;
+// Export the route handlers with proper Next.js 13+ types
+export async function GET(request: NextRequest) {
+  return handler(request);
+}
+
+export async function POST(request: NextRequest) {
+  return handler(request);
+}
