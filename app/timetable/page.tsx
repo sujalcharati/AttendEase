@@ -11,7 +11,7 @@ interface Subject {
     totalClasses: number
   }
 
-const timetable = () => {
+const Timetable = () => {
   const [subjects, ] = useState<Subject[]>([])
 
   return (
@@ -49,4 +49,4 @@ const timetable = () => {
   )
 }
 
-export default timetable
+export default Timetable

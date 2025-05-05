@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 // import axios from 'axios'
 
 const Signup = () => {
-    const [formdata, setFormdata] = useState({
+    const [, setFormdata] = useState({
         username: "",
         email: "",
         password: "",

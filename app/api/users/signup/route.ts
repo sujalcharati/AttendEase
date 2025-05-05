@@ -30,9 +30,16 @@ export async function POST(req: Request) {
         'Location': '/login'
       }
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: "Server error" }), {
-      status: 500,
-    });
+  } catch (error: unknown) {
+    console.error('Error in signup:', error instanceof Error ? error.message : 'Unknown error');
+    return new Response(
+      JSON.stringify({ 
+        error: "Server error",
+        details: error instanceof Error ? error.message : 'An unknown error occurred'
+      }), 
+      {
+        status: 500,
+      }
+    );
   }
 }
