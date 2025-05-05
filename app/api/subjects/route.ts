@@ -1,7 +1,7 @@
 import { connectDB } from '@/lib/connectDB';
 import Subject from '@/models/attendance';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(){
@@ -135,7 +135,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!deletedSubject) {
       return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
-    }
+    }   
 
     return NextResponse.json({ message: 'Subject deleted successfully' }, { status: 200 });
   } catch (error: unknown) {

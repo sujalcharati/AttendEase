@@ -2,7 +2,7 @@ import { connectDB } from '@/lib/connectDB'
 import Users from '@/models/user'
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../../auth/[...nextauth]/route'
+import { authOptions } from '@/lib/authOptions'
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
