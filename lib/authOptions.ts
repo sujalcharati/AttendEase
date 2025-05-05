@@ -66,14 +66,13 @@
 // };
 
 
-import NextAuth, { AuthOptions } from "next-auth";
+import  { AuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { JWT } from "next-auth/jwt";
 import { Session } from "next-auth";
 import { Account, User, Profile } from "next-auth";
 import GitHubProvider from "next-auth/providers/github"
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextRequest } from "next/server";
 
 // Extend the built-in types
 declare module "next-auth" {
