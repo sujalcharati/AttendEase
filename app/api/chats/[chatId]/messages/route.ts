@@ -1,13 +1,11 @@
-import { NextResponse } from "next/server"
+import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/connectDB"
 import Message from "@/models/Message"
 import Chat from "@/models/Chat"
 
-// GET /api/chats/[chatId]/messages - Get messages for a chat
 export async function GET(
-  // request: Request,
   { params }: { params: { chatId: string } }
 ) {
   try {
