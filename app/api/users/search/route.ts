@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
-    const userId = session.userId;
+    // const userId = session.userId;
 
     if (!query) {
       return NextResponse.json({ error: 'Search query is required' }, { status: 400 })

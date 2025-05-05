@@ -1,9 +1,9 @@
-import { connectDB } from '@/lib/db';
+// import { connectDB } from '@/lib/db';
 import User from '@/models/user';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
-connectDB();
+// connectDB();
 
 export async function POST(req:Request) {
     try{
@@ -53,7 +53,11 @@ export async function POST(req:Request) {
     
 
 
-    } catch (error: any) {
-        return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+        } else {
+            return new Response(JSON.stringify({ error: 'An unknown error occurred' }), { status: 500 });
+        }
     }
 }

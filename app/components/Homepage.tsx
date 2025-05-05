@@ -187,8 +187,8 @@ export function Homepage() {
         if (response.ok) {
           const rawdata = await response.json();
           console.log('Fetched subjects:', rawdata);
-          const transformedData = rawdata.map((subject: any) => ({
-            id: subject._id,           
+          const transformedData = rawdata.map((subject: Subject) => ({
+            id: subject.id,           
             name: subject.name,
             classesAttended: subject.classesAttended,
             totalClasses: subject.totalClasses
@@ -358,7 +358,7 @@ export function Homepage() {
                 <CardContent className="p-2">
                   <Select
                     value={selectValue}
-                    onValueChange={(value) => handleTimetableChange(day, time, value)}
+                    onValueChange={(value: string) => handleTimetableChange(day, time, value)}
                   >
                     <SelectTrigger className="w-full h-8">
                       <SelectValue placeholder="Select Subject">

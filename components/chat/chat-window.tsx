@@ -15,9 +15,9 @@ interface Message {
   isSent: boolean
 }
 
-interface ChatWindowProps {
-  chatId: string
-}
+// interface ChatWindowProps {
+//   chatId: string
+// }
 
 const messages: Message[] = [
   {
@@ -50,7 +50,7 @@ const messages: Message[] = [
   },
 ]
 
-export function ChatWindow({ chatId }: ChatWindowProps) {
+export function ChatWindow() {
   const [newMessage, setNewMessage] = React.useState("")
   const scrollRef = React.useRef<HTMLDivElement>(null)
 

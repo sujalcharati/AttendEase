@@ -1,45 +1,4 @@
-// import mongoose from 'mongoose';
-
-// const dbUrl = process.env.URL;
-// if (!dbUrl) {
-//     throw new Error('MongoDB connection URL is not defined');
-// }
-
-// let cached = global.mongoose;
-
-// if(!cached){
-//     cached=global.mongoose ={ conn:null, promise: null}
-// }
-// export  const connectDB = async () => {
-//   if( cached.conn){
-//     return cached.conn
-//   }
-
-//   if(!cached.promise){
-//     const opts ={
-//         bufferCommands: true,
-//         maxPoolSize: 10
-//     };
-
-//     cached.promise = mongoose.connect(dbUrl, opts).then(() => mongoose.connection);
-//   }
-
-
-//   try{
-//    cached.conn = await cached.promise
-//   }
-//   catch(error){
-//        cached.promise = null;
-//        throw error
-//   }
-//   return cached.conn;
-// };
-
-
-
-// lib/mongodb.ts
 import { MongoClient, ServerApiVersion } from "mongodb";
-
 
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"');
@@ -53,16 +12,13 @@ const options = {
   },
 };
 
-let client;
-
-
+let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 declare global {
-  var _mongoClientPromise: Promise<MongoClient>;
+  // eslint-disable-next-line no-var
+  var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
-
-
 
 if (process.env.NODE_ENV === "development") {
   if (!global._mongoClientPromise) {

@@ -1,14 +1,10 @@
 import { connectDB } from '@/lib/connectDB';
 import Subject from '@/models/attendance';
 import { getServerSession } from 'next-auth';
-import  {authOptions}  from '@/app/api/auth/[...nextauth]/route'; 
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { NextRequest, NextResponse } from 'next/server';
-import mongoose from 'mongoose';
 
-
-
-
-export async function GET(request:NextRequest){
+export async function GET(){
  
   try{
           
@@ -52,15 +48,19 @@ export async function GET(request:NextRequest){
     )
     
   }
-  catch(error: any){
-   console.log(" error in fetching the subject",error);
-   return NextResponse.json(
-    {
-      error:" there is error in fetching the subjects ",
-      details: error.message
-    },
-    {status:501}
-   )
+  catch(error: unknown) {
+    if (error instanceof Error) {
+      console.log("Error in fetching the subject:", error.message);
+    } else {
+      console.log("An unknown error occurred:", error);
+    }
+    return NextResponse.json(
+      {
+        error:" there is error in fetching the subjects ",
+        details: error instanceof Error ? error.message : "An unknown error occurred"
+      },
+      {status:501}
+    )
   }
 } 
 
@@ -79,8 +79,8 @@ export async function POST(request :NextRequest) {
     
     
     // const userId = session.user.id;
-    const userId = new mongoose.Types.ObjectId(session.userId);
-    // const userId = session.userId;
+    // const userId = new mongoose.Types.ObjectId(session.userId);
+    const userId = session.userId;
 
     
     // Get data from request body
@@ -101,10 +101,14 @@ export async function POST(request :NextRequest) {
   });
     
     return NextResponse.json(newSubject, { status: 201 });
-  } catch (error: any) {
-    console.error('Error creating subject:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error creating subject:', error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
     return NextResponse.json(
-      { error: 'Failed to create subject', details: error.message },
+      { error: 'Failed to create subject', details: error instanceof Error ? error.message : 'An unknown error occurred' },
       { status: 500 }
     );
   }
@@ -134,10 +138,14 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ message: 'Subject deleted successfully' }, { status: 200 });
-  } catch (error: any) {
-    console.error('Error deleting subject:', error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error('Error deleting subject:', error.message);
+    } else {
+      console.error('An unknown error occurred:', error);
+    }
     return NextResponse.json(
-      { error: 'Failed to delete subject', details: error.message },
+      { error: 'Failed to delete subject', details: error instanceof Error ? error.message : 'An unknown error occurred' },
       { status: 500 }
     );
   }

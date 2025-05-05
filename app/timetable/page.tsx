@@ -12,7 +12,7 @@ interface Subject {
   }
 
 const timetable = () => {
-  const [subjects, setSubjects] = useState<Subject[]>([])
+  const [subjects, ] = useState<Subject[]>([])
 
   return (
     <div className='container space-y-8 p-8' >
@@ -32,7 +32,7 @@ const timetable = () => {
                       <SelectValue placeholder={time} />
                     </SelectTrigger>
                     <SelectContent>
-                      {subjects.map((subject:any) => (
+                      {subjects.map((subject:Subject) => (
                         <SelectItem key={subject.id} value={subject.id}>
                           {subject.name}
                         </SelectItem>

@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "../auth/[...nextauth]/route"
 import { connectDB } from "@/lib/connectDB"
 import Chat from "@/models/Chat"
-import Message from "@/models/Message"
+// import Message from "@/models/Message"
 
 // GET /api/chats - Get all chats for the current user
 export async function GET() {
@@ -14,7 +14,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const userId = (session.user as any).id
+    const userId = (session.user as { id: string }).id
     await connectDB()
 
     // Find all chats where the user is a participant
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const userId = (session.user as any).id
+    const userId = (session.user as { id: string }).id
     const { name, type, participants } = await request.json()
 
     if (!name || !type || !participants) {

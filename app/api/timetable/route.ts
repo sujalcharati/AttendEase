@@ -17,10 +17,17 @@ export async function GET() {
 
     const slots = await TimetableSlot.find({ userId })
     return NextResponse.json(slots)
-  } catch (error) {
-    console.error("Error fetching timetable:", error)
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching timetable:", error.message)
+    } else {
+      console.error("An unknown error occurred:", error)
+    }
     return NextResponse.json(
-      { error: "Failed to fetch timetable" },
+      { 
+        error: "Failed to fetch timetable",
+        details: error instanceof Error ? error.message : "An unknown error occurred"
+      },
       { status: 500 }
     )
   }
@@ -81,18 +88,20 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json(slot)
-  } catch (error: any) {
-    // More detailed error logging
-    console.error("Error saving timetable:", {
-      message: error.message,
-      stack: error.stack,
-      errors: error.errors
-    })
-    
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      // More detailed error logging
+      console.error("Error saving timetable:", {
+        message: error.message,
+        stack: error.stack
+      })
+    } else {
+      console.error("An unknown error occurred:", error)
+    }
     return NextResponse.json(
       { 
         error: "Failed to save timetable",
-        details: error.message
+        details: error instanceof Error ? error.message : "An unknown error occurred"
       },
       { status: 500 }
     )

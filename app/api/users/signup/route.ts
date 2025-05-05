@@ -1,10 +1,10 @@
-import { connectDB } from '@/lib/db';
+// import { connectDB } from '@/lib/db';
 import User from '@/models/user';
 import bcrypt from 'bcrypt';
 
 export async function POST(req: Request) {
   try {
-    await connectDB();
+    // await connectDB();
     const { username, email, password } = await req.json();
 
     const existingUser = await User.findOne({ email });
