@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useSession } from "next-auth/react"
 
 interface Subject {
-  id: string
+  _id: string
   name: string
   classesAttended: number
   totalClasses: number
@@ -20,6 +20,13 @@ interface TimetableSlot {
   day: string
   time: string
   subjectId: string | null
+}
+
+interface RawSubject {
+  _id: string
+  name: string
+  classesAttended: number
+  totalClasses: number
 }
 
 export function Homepage() {
@@ -90,7 +97,7 @@ export function Homepage() {
     const newSubjectId = subjectId === "none" ? null : subjectId;
     
     // Find the selected subject for logging
-    const selectedSubject = subjects.find(s => s.id === newSubjectId);
+    const selectedSubject = subjects.find(s => s._id === newSubjectId);
     console.log(`Selected subject: ${selectedSubject?.name || 'None'}`);
     
     // Create a new timetable array with the updated slot
@@ -187,8 +194,8 @@ export function Homepage() {
         if (response.ok) {
           const rawdata = await response.json();
           console.log('Fetched subjects:', rawdata);
-          const transformedData = rawdata.map((subject: Subject) => ({
-            id: subject.id,           
+          const transformedData = rawdata.map((subject: RawSubject) => ({
+            _id: subject._id,           
             name: subject.name,
             classesAttended: subject.classesAttended,
             totalClasses: subject.totalClasses
@@ -209,31 +216,42 @@ export function Homepage() {
   }, [session]);
 
   const updateAttendance = async (id: string, type: "attended" | "missed") => {
-    setSubjects(
-      subjects.map((subject) => {
-        if (subject.id === id) {
-          return {
-            ...subject,
-            classesAttended: type === "attended" ? subject.classesAttended + 1 : subject.classesAttended,
-            totalClasses: subject.totalClasses + 1,
-          }
-        }
-        return subject
-      }),
-    )
-
-    const response = await fetch('api/subjects/attendance',{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({subjectId:id,type})
-    })
-    if(response.ok){
-      const data = await response.json();
-      console.log(data);
-    }else{
-      console.error("Failed to update attendance");
+    try {
+      console.log("Updating attendance for subject:", id, "type:", type);
+      
+      const response = await fetch('/api/subjects/attendance', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ subjectId: id, type })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Attendance update successful:", data);
+        
+        // Update local state only after successful API call
+        setSubjects(
+          subjects.map((subject) => {
+            if (subject._id === id) {
+              return {
+                ...subject,
+                classesAttended: type === "attended" ? subject.classesAttended + 1 : subject.classesAttended,
+                totalClasses: subject.totalClasses + 1,
+              }
+            }
+            return subject
+          }),
+        )
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to update attendance:", errorData);
+        alert(`Failed to update attendance: ${errorData.error || 'Unknown error'}`);
+      }
+    } catch (error) {
+      console.error("Error updating attendance:", error);
+      alert("Error connecting to the server. Please try again.");
     }
   }
 
@@ -245,7 +263,7 @@ export function Homepage() {
 
       if (response.ok) {
         // Only update the UI if the deletion was successful
-        setSubjects(subjects.filter((subject) => subject.id !== id));
+        setSubjects(subjects.filter((subject) => subject._id !== id));
       } else {
         const errorData = await response.json();
         console.error("Failed to delete subject:", errorData);
@@ -285,23 +303,23 @@ export function Homepage() {
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Array.isArray(subjects) && subjects.map((subject) => (
-          <Card key={subject.id}>
+          <Card key={subject._id}>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-base font-medium">{subject.name}</CardTitle>
-              <Button variant="ghost" size="icon" onClick={() => deleteSubject(subject.id)}>
+              <Button variant="ghost" size="icon" onClick={() => deleteSubject(subject._id)}>
                 <Trash2 className="h-4 w-4 text-muted-foreground" />
               </Button>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center gap-4">
-                  <Button size="sm" onClick={() => updateAttendance(subject.id, "attended")}>
+                  <Button size="sm" onClick={() => updateAttendance(subject._id, "attended")}>
                     Present
                   </Button>
                   <span className="text-sm text-muted-foreground">
                     {subject.classesAttended}/{subject.totalClasses} 
                   </span>
-                  <Button size="sm" variant="outline" onClick={() => updateAttendance(subject.id, "missed")}>
+                  <Button size="sm" variant="outline" onClick={() => updateAttendance(subject._id, "missed")}>
                     Absent
                   </Button>
                 </div>
@@ -348,7 +366,7 @@ export function Homepage() {
             const slot = timetable.find(s => s.day === day && s.time === time);
             
             // Find the selected subject based on the slot's subjectId
-            const selectedSubject = subjects.find(s => s.id === slot?.subjectId);
+            const selectedSubject = subjects.find(s => s._id === slot?.subjectId);
             
             // Determine the value for the Select component
             const selectValue = slot?.subjectId || "none";
@@ -368,7 +386,7 @@ export function Homepage() {
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
                       {subjects.map((subject) => (
-                        <SelectItem key={subject.id} value={subject.id}>
+                        <SelectItem key={subject._id} value={subject._id}>
                           {subject.name}
                         </SelectItem>
                       ))}

@@ -5,48 +5,23 @@ import { authOptions } from '@/lib/authOptions';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(){
- 
-  try{
-          
+  try {
     await connectDB();
     const session = await getServerSession(authOptions);
-    console.log(session);
+    console.log("Session in GET:", session);
 
     if(!session || !session.user){
-     return NextResponse.json(
-      {error:"Not authenticated"},
-      { status:401}
-     )
-    }
-
-    // const userId = new mongoose.Types.ObjectId(session.userId);
-    const userId = session.userId;
-
-
-    if (!userId) {
-      console.log("Full session object:", JSON.stringify(session));
-      
-      // Try alternate locations based on your session structure
-      // Option 1: If userId is in the token instead
       return NextResponse.json(
-        {error: "User ID not found in session"},
-        {status: 400}
-      );
+        {error:"Not authenticated"},
+        { status:401}
+      )
     }
 
+    // Get all subjects without filtering by userId
+    const subjects = await Subject.find({});
+    console.log("Found subjects:", subjects);
 
-    // const subjects = await Subject.find({ userId });
-    const subjects = await Subject.find({ });
-    console.log("All subjects:", subjects);
-
-
-
-    // const subject = await Subject.findOne({ userId });
-    return NextResponse.json(
-      subjects,
-      {status:201}
-    )
-    
+    return NextResponse.json(subjects, {status: 200});
   }
   catch(error: unknown) {
     if (error instanceof Error) {
