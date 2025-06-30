@@ -1,13 +1,14 @@
-import {  NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/connectDB"
 import Message from "@/models/Message"
 import Chat from "@/models/Chat"
 
+// GET /api/chats/[chatId]/messages
 export async function GET(
-  request: Request,
-  context: { params: { chatId: string } }
+  req: Request,
+  { params }: { params: { chatId: string } }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -17,7 +18,7 @@ export async function GET(
     }
 
     const userId = (session.user as {id: string}).id
-    const { chatId } = context.params
+    const chatId = params.chatId
 
     await connectDB()
 
@@ -50,9 +51,10 @@ export async function GET(
 }
 
 // POST /api/chats/[chatId]/messages - Send a new message
+// POST /api/chats/[chatId]/messages
 export async function POST(
-  request: Request,
-  context: { params: { chatId: string } }
+  req: Request,
+  { params }: { params: { chatId: string } }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -62,8 +64,8 @@ export async function POST(
     }
 
     const userId = (session.user as { id: string }).id
-    const { chatId } = context.params
-    const { text } = await request.json()
+    const chatId = params.chatId
+    const { text } = await req.json()
 
     if (!text) {
       return NextResponse.json(
