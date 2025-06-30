@@ -6,6 +6,7 @@ import Message from "@/models/Message"
 import Chat from "@/models/Chat"
 
 export async function GET(
+  request: Request,
   { params }: { params: { chatId: string } }
 ) {
   try {
