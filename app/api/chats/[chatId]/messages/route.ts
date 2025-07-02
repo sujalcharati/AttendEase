@@ -132,10 +132,11 @@ import Message from "@/models/Message"
 import Chat from "@/models/Chat"
 
 // GET /api/chats/[chatId]/messages
-export async function GET(
-  req: Request,
-  { params }: { params: { chatId: string } }
-) {
+export async function GET(request: Request) {
+  // Extract chatId from URL
+  const pathParts = request.url.split("/")
+  const chatIdIndex = pathParts.findIndex((part: string) => part === "chats") + 1
+  const chatId = pathParts[chatIdIndex]
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
@@ -143,7 +144,6 @@ export async function GET(
     }
 
     const userId = (session.user as { id: string }).id
-    const chatId = params.chatId
 
     await connectDB()
 
@@ -174,19 +174,21 @@ export async function GET(
 }
 
 // POST /api/chats/[chatId]/messages
-export async function POST(
-  req: Request,
-  { params }: { params: { chatId: string } }
-) {
+export async function POST(request: Request) {
   try {
+    // Extract chatId from URL
+    const pathParts = request.url.split("/")
+    const chatIdIndex = pathParts.findIndex((part: string) => part === "chats") + 1
+    const chatId = pathParts[chatIdIndex]
+    
     const session = await getServerSession(authOptions)
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
     const userId = (session.user as { id: string }).id
-    const chatId = params.chatId
-    const { text } = await req.json()
+    const body = await request.json()
+    const text = body.text
 
     if (!text) {
       return NextResponse.json(
