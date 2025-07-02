@@ -7,6 +7,7 @@ import Chat from "@/models/Chat"
 
 // GET /api/chats - Get all chats for the current user
 export async function GET() {
+  
   try {
     const session = await getServerSession(authOptions)
     
@@ -50,6 +51,7 @@ export async function POST(request: Request) {
         { status: 400 }
       )
     }
+    
 
     await connectDB()
 
