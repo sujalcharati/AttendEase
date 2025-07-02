@@ -124,21 +124,18 @@
 //   }
 // } 
 
-import { NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/authOptions"
 import { connectDB } from "@/lib/connectDB"
 import Message from "@/models/Message"
 import Chat from "@/models/Chat"
 
-type Params = {
-  params: {
-    chatId: string
-  }
-}
-
 // GET /api/chats/[chatId]/messages
-export async function GET(req: NextRequest, { params }: Params) {
+export async function GET(
+  req: Request,
+  { params }: { params: { chatId: string } }
+) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
@@ -177,7 +174,10 @@ export async function GET(req: NextRequest, { params }: Params) {
 }
 
 // POST /api/chats/[chatId]/messages
-export async function POST(req: NextRequest, { params }: Params) {
+export async function POST(
+  req: Request,
+  { params }: { params: { chatId: string } }
+) {
   try {
     const session = await getServerSession(authOptions)
     if (!session?.user) {
