@@ -5,8 +5,13 @@ import { ChatList } from "@/components/chat/chat-list"
 import { ChatWindow } from "@/components/chat/chat-window"
 import { CreateGroupDialog } from "@/components/chat/create-group"
 
+
+
 export default function SocialPage() {
   const [selectedChat, setSelectedChat] = React.useState<string>()
+  interface ChatWindowProps {
+    chatId: string
+  }
 
   return (
     <div className="grid h-[calc(100vh-4rem)] grid-cols-[350px_1fr]">
