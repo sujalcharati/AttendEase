@@ -34,8 +34,6 @@
 //   )
 // }
 
-import { NextResponse } from 'next/server';
-
-export async function GET() {
-  return NextResponse.json({ message: 'Placeholder route active' });
+export default function MessagesPage() {
+  return <div>This is the messages page</div>;
 }
