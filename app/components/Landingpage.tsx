@@ -27,7 +27,7 @@ const Landingpage = () => {
                         <div className="text-gray-600 text-xl lg:text-2xl mb-8 leading-relaxed">
                             <p className="mb-2">Say goodbye to boring forms.</p>
                             <p>Meet <span className="font-semibold text-blue-600">Attendease</span> — the intuitive,</p>
-                            <p>free solution you've been looking for.</p>
+                            <p>free solution you&apos;ve been looking for.</p>
                         </div>
 
                         <div className="space-y-4">
@@ -80,7 +80,7 @@ const Landingpage = () => {
                                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                             <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
                                         </div>
-                                        <span className="ml-2 text-sm font-medium text-gray-600">Today's Rate</span>
+                                        <span className="ml-2 text-sm font-medium text-gray-600">Today&apos;s Rate</span>
                                     </div>
                                     <div className="text-2xl font-bold text-gray-800">94%</div>
                                     <div className="text-sm text-gray-500">Attendance rate</div>
