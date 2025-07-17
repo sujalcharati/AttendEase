@@ -105,22 +105,7 @@ const Landingpage = () => {
                         </div>
                     </div>
                 </div>
-
-                {/* Stats Section */}
-                <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-                    <div className="p-6">
-                        <div className="text-4xl font-bold text-blue-600 mb-2">10k+</div>
-                        <div className="text-gray-600">Active Users</div>
-                    </div>
-                    <div className="p-6">
-                        <div className="text-4xl font-bold text-indigo-600 mb-2">99.9%</div>
-                        <div className="text-gray-600">Uptime</div>
-                    </div>
-                    <div className="p-6">
-                        <div className="text-4xl font-bold text-purple-600 mb-2">24/7</div>
-                        <div className="text-gray-600">Support</div>
-                    </div>
-                </div>
+             
             </div>
         </div>
     );
