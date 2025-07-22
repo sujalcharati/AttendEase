@@ -16,16 +16,20 @@ export async function POST(request:NextRequest){
             console.log("No session found");
             return NextResponse.json({error:"unauthorized"},{status:401})
         }
+
+        // Get the current user's ID
+        const userId = (session.user as { id: string }).id;
         
         const {subjectId,type} = await request.json();
         console.log("Request data:", { subjectId, type });
 
-        const subject = await Subject.findById(subjectId);
+        // Find the subject and verify it belongs to the current user
+        const subject = await Subject.findOne({ _id: subjectId, userId: userId });
         console.log("Found subject:", subject);
         
         if(!subject){
-            console.log("Subject not found");
-            return NextResponse.json({error:"subject not found"},{status:404})
+            console.log("Subject not found or unauthorized");
+            return NextResponse.json({error:"subject not found or unauthorized"},{status:404})
         }
         
         if(type==="attended"){

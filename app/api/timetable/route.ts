@@ -12,7 +12,7 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const userId = session.userId;
+    const userId = (session.user as { id: string }).id;
     await connectDB()
 
     const slots = await TimetableSlot.find({ userId })
@@ -41,8 +41,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Ensure userId exists in session
-    const userId = session.userId;
+    // Get userId properly from session
+    const userId = (session.user as { id: string }).id;
     if (!userId) {
       console.error("No userId found in session:", session.user)
       return NextResponse.json(

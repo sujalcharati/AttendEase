@@ -17,9 +17,12 @@ export async function GET(){
       )
     }
 
-    // Get all subjects without filtering by userId
-    const subjects = await Subject.find({});
-    console.log("Found subjects:", subjects);
+    // Get the current user's ID
+    const userId = (session.user as { id: string }).id;
+    
+    // Filter subjects by the current user's ID
+    const subjects = await Subject.find({ userId: userId });
+    console.log("Found subjects for user:", userId, subjects);
 
     return NextResponse.json(subjects, {status: 200});
   }
@@ -52,10 +55,8 @@ export async function POST(request :NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
     
-    
-    // const userId = session.user.id;
-    // const userId = new mongoose.Types.ObjectId(session.userId);
-    const userId = session.userId;
+    // Get the current user's ID properly
+    const userId = (session.user as { id: string }).id;
 
     
     // Get data from request body
@@ -98,6 +99,9 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
+    // Get the current user's ID
+    const userId = (session.user as { id: string }).id;
+
     const { searchParams } = new URL(request.url);
     const subjectId = searchParams.get('id');
 
@@ -105,12 +109,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Subject ID is required' }, { status: 400 });
     }
 
-    // Delete the subject
-    const deletedSubject = await Subject.findByIdAndDelete(subjectId);
+    // Find the subject and verify it belongs to the current user
+    const subject = await Subject.findOne({ _id: subjectId, userId: userId });
 
-    if (!deletedSubject) {
-      return NextResponse.json({ error: 'Subject not found' }, { status: 404 });
-    }   
+    if (!subject) {
+      return NextResponse.json({ error: 'Subject not found or unauthorized' }, { status: 404 });
+    }
+
+    // Delete the subject
+    await Subject.findByIdAndDelete(subjectId);
 
     return NextResponse.json({ message: 'Subject deleted successfully' }, { status: 200 });
   } catch (error: unknown) {
