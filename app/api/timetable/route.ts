@@ -12,7 +12,8 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const userId = (session.user as { id: string }).id;
+    const userId = session.userId || (session.user as { id: string }).id;
+    console.log("User ID in timetable GET:", userId);
     await connectDB()
 
     const slots = await TimetableSlot.find({ userId })
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
     }
 
     // Get userId properly from session
-    const userId = (session.user as { id: string }).id;
+    const userId = session.userId || (session.user as { id: string }).id;
+    console.log("User ID in timetable POST:", userId);
     if (!userId) {
       console.error("No userId found in session:", session.user)
       return NextResponse.json(

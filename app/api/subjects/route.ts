@@ -18,7 +18,8 @@ export async function GET(){
     }
 
     // Get the current user's ID
-    const userId = (session.user as { id: string }).id;
+    const userId = session.userId || (session.user as { id: string }).id;
+    console.log("User ID:", userId);
     
     // Filter subjects by the current user's ID
     const subjects = await Subject.find({ userId: userId });
@@ -45,8 +46,8 @@ export async function GET(){
 export async function POST(request :NextRequest) {
   try {
     // Connect to database
+    console.log("Database connected");
     await connectDB();
-    
     // Get current user session
     const session = await getServerSession(authOptions);
     console.log(session);
@@ -56,7 +57,12 @@ export async function POST(request :NextRequest) {
     }
     
     // Get the current user's ID properly
-    const userId = (session.user as { id: string }).id;
+    const userId = session.userId || (session.user as { id: string }).id;
+    console.log("User ID in POST:", userId);
+    
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID not found in session' }, { status: 400 });
+    }
 
     
     // Get data from request body
@@ -77,7 +83,8 @@ export async function POST(request :NextRequest) {
   });
     
     return NextResponse.json(newSubject, { status: 201 });
-  } catch (error: unknown) {
+  } 
+  catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Error creating subject:', error.message);
     } else {
@@ -100,7 +107,8 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get the current user's ID
-    const userId = (session.user as { id: string }).id;
+    const userId = session.userId || (session.user as { id: string }).id;
+    console.log("User ID in DELETE:", userId);
 
     const { searchParams } = new URL(request.url);
     const subjectId = searchParams.get('id');

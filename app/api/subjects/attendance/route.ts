@@ -18,7 +18,13 @@ export async function POST(request:NextRequest){
         }
 
         // Get the current user's ID
-        const userId = (session.user as { id: string }).id;
+        const userId = session.userId || (session.user as { id: string }).id;
+        console.log("User ID in attendance:", userId);
+        
+        if (!userId) {
+            console.log("No user ID found in session");
+            return NextResponse.json({error:"User ID not found in session"},{status:400})
+        }
         
         const {subjectId,type} = await request.json();
         console.log("Request data:", { subjectId, type });
