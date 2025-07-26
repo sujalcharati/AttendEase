@@ -2,7 +2,9 @@
 import React from 'react'
 import { Card,CardContent,CardHeader,CardTitle } from '@/components/ui/card'
 import { Select ,SelectTrigger,SelectValue,SelectContent,SelectItem} from '@/components/ui/select'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 interface Subject {
     id: string
@@ -12,7 +14,22 @@ interface Subject {
   }
 
 const Timetable = () => {
+  const { data: session, status } = useSession()
+  const router = useRouter()
   const [subjects, ] = useState<Subject[]>([])
+
+  useEffect(() => {
+    if (status === "loading") return // Still loading
+    if (!session) router.push("/signin")
+  }, [session, status, router])
+
+  if (status === "loading") {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+  }
+
+  if (!session) {
+    return null // Will redirect
+  }
 
   return (
     <div className='container space-y-8 p-8' >

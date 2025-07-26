@@ -158,7 +158,7 @@ export const authOptions: AuthOptions = {
     },
   },
   pages: {
-    signIn: "/",
-    error: "/",
+    signIn: "/signin",
+    error: "/signin",
   },
 };
